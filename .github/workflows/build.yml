@@ -38,7 +38,7 @@ jobs:
       shell: pwsh # Using PowerShell for multi-line command
 
     - name: Upload EXE artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: resolve-discord-presence-exe
         path: dist/ResolveRPC/DaVinci Resolve RPC.exe # Path to the generated EXE
