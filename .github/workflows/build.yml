@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Maven and Windows EXE Packaging
 
 on:
   push:
@@ -8,24 +8,37 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest # Changed to Windows runner
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up JDK 11
+    - name: Set up JDK 17 for jpackage
       uses: actions/setup-java@v3
       with:
-        java-version: '11'
+        java-version: '17' # Using JDK 17 for better jpackage support
         distribution: 'temurin'
         cache: maven
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: Upload JAR artifact
+    - name: Package as EXE using jpackage
+      run: |
+        jpackage --type exe `
+          --input target/ `
+          --main-jar resolve-discord-presence-1.0-SNAPSHOT.jar `
+          --main-class com.example.resolverp.Main `
+          --name "DaVinci Resolve RPC" `
+          --app-version 1.0.0 `
+          --dest dist/ResolveRPC `
+          --win-console `
+          --verbose
+      shell: pwsh # Using PowerShell for multi-line command
+
+    - name: Upload EXE artifact
       uses: actions/upload-artifact@v3
       with:
-        name: resolve-discord-presence-jar
-        path: target/resolve-discord-presence-1.0-SNAPSHOT.jar
+        name: resolve-discord-presence-exe
+        path: dist/ResolveRPC/DaVinci Resolve RPC.exe # Path to the generated EXE
